@@ -1,0 +1,28 @@
+version: '2'
+services:
+    phpfpm:
+      build: PHP-FPM
+      container_name: alpine-php-fpm
+      volumes:
+        - .:/var/www/html/public
+    mysql:
+      image: mysql
+      volumes:
+        - .mysql:/var/lib/mysql
+        # - lowmem.cnf:/etc/mysql/conf.d/lowmem.cnf
+      environment:
+        MYSQL_DATABASE: database
+        MYSQL_USER: user
+        MYSQL_PASSWORD: password
+        MYSQL_ALLOW_EMPTY_PASSWORD: 1
+    nginx:
+      build: Nginx
+      container_name: alpine-nginx
+      volumes_from:
+        - phpfpm
+      ports:
+        - "80:80"
+      depends_on:
+        - phpfpm
+      # links:
+      #  - phpfpm
